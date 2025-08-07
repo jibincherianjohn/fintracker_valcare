@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { BiHide, BiShow } from 'react-icons/bi';
 import { FaCheck, FaLock } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
@@ -38,8 +39,8 @@ export default function RegisterInterface() {
         if (!formData.username.trim()) {
             newErrors.username = 'username is required';
             isValid = false;
-        } else if (formData.username.length < 6) {
-            newErrors.username = 'username must be at least 6 characters long';
+        } else if (formData.username.length < 4) {
+            newErrors.username = 'username must be at least 4 characters long';
             isValid = false;
         }
 
@@ -53,15 +54,17 @@ export default function RegisterInterface() {
 
         if (validateForm()) {
             // Simulate API call
-            toast.success('Login successfully!');
+            toast.success('Register successfully!');
               localStorage.setItem("registerdata", JSON.stringify(formData))
               setIsSubmitting(false);
             setTimeout(() => {
-       navigate("/")
+       navigate("/login")
             }, 1000);
         } else {
             setIsSubmitting(false);
               toast.error('Something Went Wrong!!!');
+
+
         }
     };
 
@@ -88,87 +91,79 @@ export default function RegisterInterface() {
                     </div>
 
                     <div>
-                        <div className="space-y-6">
-                            <div>
-                                <input
-                                    type="text"
-                                    value={formData.username}
-                                    onChange={(e) => handleInputChange('username', e.target.value)}
-                                    className={`w-full px-4 py-4 border rounded-xl focus:outline-none focus:ring-2 text-gray-900 transition-colors ${
-                                        errors.username 
-                                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                                            : 'border-gray-200 focus:ring-purple-500 focus:border-transparent'
-                                    }`}
-                                    placeholder="username address"
-                                />
-                                {errors.username && (
-                                    <p className="mt-2 text-sm text-red-600">{errors.username}</p>
-                                )}
-                            </div>
-                            <div>
-                                <input
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={(e) => handleInputChange('email', e.target.value)}
-                                    className={`w-full px-4 py-4 border rounded-xl focus:outline-none focus:ring-2 text-gray-900 transition-colors ${
-                                        errors.email 
-                                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                                            : 'border-gray-200 focus:ring-purple-500 focus:border-transparent'
-                                    }`}
-                                    placeholder="Email address"
-                                />
-                                {errors.email && (
-                                    <p className="mt-2 text-sm text-red-600">{errors.email}</p>
-                                )}
-                            </div>
-
-                            <div className='relative'> 
-                                <input
-                                    type={show ? "text" : "password"}
-                                    value={formData.password}
-                                    onChange={(e) => handleInputChange('password', e.target.value)}
-                                    className={`w-full px-4 py-4 pr-[35px] border rounded-xl focus:outline-none focus:ring-2 text-gray-900 transition-colors ${
-                                        errors.password 
-                                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                                            : 'border-gray-200 focus:ring-purple-500 focus:border-transparent'
-                                    }`}
-                                    placeholder="Password"
-                                />
-                                <div
-                                    onClick={handleshow}
-                                    className='absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer'
-                                >
-                                    {show ? <BiShow className="w-5 h-5 text-gray-400" /> : <BiHide className="w-5 h-5 text-gray-400" />}
+                      <form onSubmit={(e)=>handleSubmit(e)}>
+                            <div className="space-y-6">
+                                <div>
+                                    <input
+                                        type="text"
+                                        value={formData.username}
+                                        onChange={(e) => handleInputChange('username', e.target.value)}
+                                        className={`w-full px-4 py-4 border rounded-xl focus:outline-none focus:ring-2 text-gray-900 transition-colors ${
+                                            errors.username 
+                                                ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                                                : 'border-gray-200 focus:ring-purple-500 focus:border-transparent'
+                                        }`}
+                                        placeholder="Username"
+                                    />
+                                    {errors.username && (
+                                        <p className="mt-2 text-sm text-red-600">{errors.username}</p>
+                                    )}
                                 </div>
-                                {errors.password && (
-                                    <p className="mt-2 text-sm text-red-600">{errors.password}</p>
-                                )}
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center cursor-pointer" onClick={() => setRememberMe(!rememberMe)}>
-                                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${rememberMe
-                                            ? 'bg-purple-600 border-purple-600'
-                                            : 'border-gray-300 hover:border-purple-400'
-                                        }`}>
-                                        {rememberMe && <FaCheck  className="w-3 h-3 text-white" />}
+                                <div>
+                                    <input
+                                        type="email"
+                                        value={formData.email}
+                                        onChange={(e) => handleInputChange('email', e.target.value)}
+                                        className={`w-full px-4 py-4 border rounded-xl focus:outline-none focus:ring-2 text-gray-900 transition-colors ${
+                                            errors.email 
+                                                ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                                                : 'border-gray-200 focus:ring-purple-500 focus:border-transparent'
+                                        }`}
+                                        placeholder="Email address"
+                                    />
+                                    {errors.email && (
+                                        <p className="mt-2 text-sm text-red-600">{errors.email}</p>
+                                    )}
+                                </div>
+    
+                                <div className='relative'> 
+                                    <input
+                                        type={show ? "text" : "password"}
+                                        value={formData.password}
+                                        onChange={(e) => handleInputChange('password', e.target.value)}
+                                        className={`w-full px-4 py-4 pr-[35px] border rounded-xl focus:outline-none focus:ring-2 text-gray-900 transition-colors ${
+                                            errors.password 
+                                                ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                                                : 'border-gray-200 focus:ring-purple-500 focus:border-transparent'
+                                        }`}
+                                        placeholder="Password"
+                                    />
+                                    <div
+                                        onClick={handleshow}
+                                        className='absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer'
+                                    >
+                                        {show ? <BiShow className="w-5 h-5 text-gray-400" /> : <BiHide className="w-5 h-5 text-gray-400" />}
                                     </div>
-                                    <span className="ml-3 text-gray-700">Remember me</span>
+                                    {errors.password && (
+                                        <p className="mt-2 text-sm text-red-600">{errors.password}</p>
+                                    )}
                                 </div>
+    
+                             
+    
+                                <button
+                                    onClick={handleSubmit}
+                                    disabled={isSubmitting}
+                                    className={`w-full py-4 px-6 rounded-xl font-semibold transition-colors ${
+                                        isSubmitting
+                                            ? 'bg-purple-400 text-white cursor-not-allowed'
+                                            : 'bg-purple-600 text-white hover:bg-purple-700'
+                                    }`}
+                                >
+                                    {isSubmitting ? 'Signing In...' : 'Sign In'}
+                                </button>
                             </div>
-
-                            <button
-                                onClick={handleSubmit}
-                                disabled={isSubmitting}
-                                className={`w-full py-4 px-6 rounded-xl font-semibold transition-colors ${
-                                    isSubmitting
-                                        ? 'bg-purple-400 text-white cursor-not-allowed'
-                                        : 'bg-purple-600 text-white hover:bg-purple-700'
-                                }`}
-                            >
-                                {isSubmitting ? 'Signing In...' : 'Sign In'}
-                            </button>
-                        </div>
+                      </form>
                     </div>
 
                     <div className="mt-8 text-center">

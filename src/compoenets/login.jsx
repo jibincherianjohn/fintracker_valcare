@@ -2,19 +2,20 @@ import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { BiHide, BiShow } from 'react-icons/bi';
 import { FaCheck, FaLock } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function LoginInterface() {
-    const [formData, setFormData] = useState({ email: '', password: '' });
+    const [formData, setFormData] = useState({ email: '', password: '' ,name:""});
     const [rememberMe, setRememberMe] = useState(true);
     const [show, setShow] = useState(false);
     const [errors, setErrors] = useState({ email: '', password: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate()
+    const registerUser = localStorage.getItem("registerdata") ? JSON.parse(localStorage.getItem("registerdata")) : {}
     const handleshow = () => {
         setShow(!show)
     }
-       const validateForm = () => {
+    const validateForm = () => {
         const newErrors = { email: '', password: '' };
         let isValid = true;
 
@@ -40,22 +41,38 @@ export default function LoginInterface() {
         return isValid;
     };
 
+    console.log(registerUser, "reg");
+
     const handleSubmit = (e) => {
         e.preventDefault();
         setIsSubmitting(true);
 
         if (validateForm()) {
-            // Simulate API call
-            toast.success('Login successful!');
-              localStorage.setItem("isLogged", true)
-              localStorage.setItem("userdata", JSON.stringify(formData))
-              setIsSubmitting(false);
-            setTimeout(() => {
-       navigate("/")
-            }, 1000);
+             const newUser = {
+        id: Date.now().toString(),
+        name:registerUser? registerUser.username:"",
+        email:formData.email,
+        password:formData.password,
+        createdAt: new Date().toISOString()
+      };
+      
+            if (registerUser?.email == formData.email && registerUser?.password == formData.password) {
+                toast.success('Login successful!');
+                localStorage.setItem("isLogged", true)
+                localStorage.setItem("userdata", JSON.stringify(newUser))
+                setIsSubmitting(false);
+                setTimeout(() => {
+                    navigate("/")
+                }, 1000);
+            }
+            else {
+                setIsSubmitting(false);
+                toast.error('Password Or Email is Not Vaild');
+            }
+
         } else {
             setIsSubmitting(false);
-              toast.error('Something Went Wrong!!!');
+            toast.error('Something Went Wrong!!!');
         }
     };
 
@@ -67,7 +84,7 @@ export default function LoginInterface() {
         }
     };
     return (
-       <div className="bg-gray-100 flex items-center justify-center p-4 min-h-screen">
+        <div className="bg-gray-100 flex items-center justify-center p-4 min-h-screen">
             <div className="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2">
 
                 {/* Left Side - Login Form */}
@@ -82,78 +99,79 @@ export default function LoginInterface() {
                     </div>
 
                     <div>
-                        <div className="space-y-6">
-                            <div>
-                                <input
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={(e) => handleInputChange('email', e.target.value)}
-                                    className={`w-full px-4 py-4 border rounded-xl focus:outline-none focus:ring-2 text-gray-900 transition-colors ${
-                                        errors.email 
-                                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                                            : 'border-gray-200 focus:ring-purple-500 focus:border-transparent'
-                                    }`}
-                                    placeholder="Email address"
-                                />
-                                {errors.email && (
-                                    <p className="mt-2 text-sm text-red-600">{errors.email}</p>
-                                )}
-                            </div>
-
-                            <div className='relative'> 
-                                <input
-                                    type={show ? "text" : "password"}
-                                    value={formData.password}
-                                    onChange={(e) => handleInputChange('password', e.target.value)}
-                                    className={`w-full px-4 py-4 pr-[35px border rounded-xl focus:outline-none focus:ring-2 text-gray-900 transition-colors ${
-                                        errors.password 
-                                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                                            : 'border-gray-200 focus:ring-purple-500 focus:border-transparent'
-                                    }`}
-                                    placeholder="Password"
-                                />
-                                <div
-                                    onClick={handleshow}
-                                    className='absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer'
-                                >
-                                    {show ? <BiShow className="w-5 h-5 text-gray-400" /> : <BiHide className="w-5 h-5 text-gray-400" />}
+                        <form onSubmit={(e) => handleSubmit(e)}>
+                            <div className="space-y-6">
+                                <div>
+                                    <input
+                                        type="email"
+                                        value={formData.email}
+                                        onChange={(e) => handleInputChange('email', e.target.value)}
+                                        className={`w-full px-4 py-4 border rounded-xl focus:outline-none focus:ring-2 text-gray-900 transition-colors ${errors.email
+                                                ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                                                : 'border-gray-200 focus:ring-purple-500 focus:border-transparent'
+                                            }`}
+                                        placeholder="Email address"
+                                    />
+                                    {errors.email && (
+                                        <p className="mt-2 text-sm text-red-600">{errors.email}</p>
+                                    )}
                                 </div>
-                                {errors.password && (
-                                    <p className="mt-2 text-sm text-red-600">{errors.password}</p>
-                                )}
-                            </div>
 
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center cursor-pointer" onClick={() => setRememberMe(!rememberMe)}>
-                                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${rememberMe
+                                <div className='relative'>
+                                    <input
+                                        type={show ? "text" : "password"}
+                                        value={formData.password}
+                                        onChange={(e) => handleInputChange('password', e.target.value)}
+                                        className={`w-full px-4 py-4 pr-[35px border rounded-xl focus:outline-none focus:ring-2 text-gray-900 transition-colors ${errors.password
+                                                ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                                                : 'border-gray-200 focus:ring-purple-500 focus:border-transparent'
+                                            }`}
+                                        placeholder="Password"
+                                    />
+                                    <div
+                                        onClick={handleshow}
+                                        className='absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer'
+                                    >
+                                        {show ? <BiShow className="w-5 h-5 text-gray-400" /> : <BiHide className="w-5 h-5 text-gray-400" />}
+                                    </div>
+                                    {errors.password && (
+                                        <p className="mt-2 text-sm text-red-600">{errors.password}</p>
+                                    )}
+                                </div>
+
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center cursor-pointer" onClick={() => setRememberMe(!rememberMe)}>
+                                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${rememberMe
                                             ? 'bg-purple-600 border-purple-600'
                                             : 'border-gray-300 hover:border-purple-400'
-                                        }`}>
-                                        {rememberMe && <FaCheck  className="w-3 h-3 text-white" />}
+                                            }`}>
+                                            {rememberMe && <FaCheck className="w-3 h-3 text-white" />}
+                                        </div>
+                                        <span className="ml-3 text-gray-700">Remember me</span>
                                     </div>
-                                    <span className="ml-3 text-gray-700">Remember me</span>
                                 </div>
-                            </div>
 
-                            <button
-                                onClick={handleSubmit}
-                                disabled={isSubmitting}
-                                className={`w-full py-4 px-6 rounded-xl font-semibold transition-colors ${
-                                    isSubmitting
-                                        ? 'bg-purple-400 text-white cursor-not-allowed'
-                                        : 'bg-purple-600 text-white hover:bg-purple-700'
-                                }`}
-                            >
-                                {isSubmitting ? 'Signing In...' : 'Sign In'}
-                            </button>
-                        </div>
+                                <button
+                                    onClick={handleSubmit}
+                                    disabled={isSubmitting}
+                                    className={`w-full py-4 px-6 rounded-xl font-semibold transition-colors ${isSubmitting
+                                            ? 'bg-purple-400 text-white cursor-not-allowed'
+                                            : 'bg-purple-600 text-white hover:bg-purple-700'
+                                        }`}
+                                >
+                                    {isSubmitting ? 'Signing In...' : 'Sign In'}
+                                </button>
+                            </div>
+                        </form>
                     </div>
 
                     <div className="mt-8 text-center">
                         <span className="text-gray-600">Don't have an account? </span>
-                        <button className="text-purple-600 hover:text-purple-700 font-semibold transition-colors">
-                            Sign Up
-                        </button>
+                        <Link to={"/register"}>
+                            <button className="text-purple-600 hover:text-purple-700 font-semibold transition-colors">
+                                Sign Up
+                            </button>
+                        </Link>
                     </div>
                 </div>
 
@@ -172,7 +190,7 @@ export default function LoginInterface() {
                     <div className="relative z-10 flex flex-col items-center">
                         {/* Success Checkmark */}
                         <div className="absolute -top-16 -left-8 bg-white rounded-full p-3 shadow-lg">
-                            <FaCheck  className="w-6 h-6 text-green-500" />
+                            <FaCheck className="w-6 h-6 text-green-500" />
                         </div>
 
                         {/* Phone Mockup */}
@@ -221,7 +239,7 @@ export default function LoginInterface() {
 
                         {/* Security Lock */}
                         <div className="absolute bottom-12 right-8 bg-white rounded-2xl p-4 shadow-lg">
-                            <FaLock  className="w-8 h-8 text-purple-600" />
+                            <FaLock className="w-8 h-8 text-purple-600" />
                             <div className="w-4 h-2 bg-purple-600 rounded-full mt-1 mx-auto"></div>
                         </div>
                     </div>
