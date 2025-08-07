@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { IoFilterCircle } from 'react-icons/io5';
 import { IoIosTrendingDown, IoIosTrendingUp } from 'react-icons/io';
 import { CiSearch } from 'react-icons/ci';
