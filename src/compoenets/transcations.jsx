@@ -3,6 +3,7 @@ import { IoFilterCircle } from 'react-icons/io5';
 import { IoIosTrendingDown, IoIosTrendingUp } from 'react-icons/io';
 import { CiSearch } from 'react-icons/ci';
 import { FaCalendarAlt, FaEdit, FaPlus, FaTrashAlt } from 'react-icons/fa';
+import QuickAddTransaction from './addtrancstion';
 
 const CATEGORIES = {
   income: ['Salary', 'Freelance', 'Investment', 'Gift', 'Misc'],
@@ -10,7 +11,7 @@ const CATEGORIES = {
 };
 
 const TransactionHistory = () => {
-  const  user  =  localStorage.getItem("userdata") ? JSON.parse(localStorage.getItem("userdata")) : {}
+  const user = localStorage.getItem("userdata") ? JSON.parse(localStorage.getItem("userdata")) : {}
   const [transactions, setTransactions] = useState([]);
   const [filteredTransactions, setFilteredTransactions] = useState([]);
   const [filters, setFilters] = useState({
@@ -23,6 +24,16 @@ const TransactionHistory = () => {
   const [sortBy, setSortBy] = useState('date');
   const [sortOrder, setSortOrder] = useState('desc');
   const [showFilters, setShowFilters] = useState(false);
+  const [show, setShow] = useState(false);
+  const [id, setId] = useState("")
+
+  const handleShow = () => {
+    setShow(!show)
+  }
+  const handleEdit = (id) => {
+    setId(id)
+    handleShow()
+  }
 
   useEffect(() => {
     loadTransactions();
@@ -36,7 +47,22 @@ const TransactionHistory = () => {
     const userTransactions = JSON.parse(localStorage.getItem(`transactions_${user.id}`) || '[]');
     setTransactions(userTransactions);
   }, [user.id]);
+  const addTransaction = (newTransaction) => {
+    const updatedTransactions = [...transactions, newTransaction];
+    setTransactions(updatedTransactions);
+    localStorage.setItem(`transactions_${user.id}`, JSON.stringify(updatedTransactions));
+  };
+ const editTransaction = (updatedTransaction) => {
+    const updatedTransactions = transactions.map(transaction => 
+      transaction.id === updatedTransaction.id 
+        ? updatedTransaction 
+        : transaction
+    );
+        setTransactions(updatedTransactions);
+    localStorage.setItem(`transactions_${user.id}`, JSON.stringify(updatedTransactions));
+    setId("")
 
+  };
   const applyFilters = () => {
     let filtered = [...transactions];
 
@@ -61,7 +87,7 @@ const TransactionHistory = () => {
     // Filter by search term
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
-      filtered = filtered.filter(t => 
+      filtered = filtered.filter(t =>
         t.category.toLowerCase().includes(searchTerm) ||
         (t.description && t.description.toLowerCase().includes(searchTerm))
       );
@@ -70,7 +96,7 @@ const TransactionHistory = () => {
     // Sort
     filtered.sort((a, b) => {
       let aValue, bValue;
-      
+
       switch (sortBy) {
         case 'amount':
           aValue = parseFloat(a.amount);
@@ -125,7 +151,7 @@ const TransactionHistory = () => {
     });
   };
 
-  const availableCategories = filters.type === 'all' 
+  const availableCategories = filters.type === 'all'
     ? [...CATEGORIES.income, ...CATEGORIES.expense]
     : CATEGORIES[filters.type] || [];
 
@@ -140,7 +166,7 @@ const TransactionHistory = () => {
               Showing {filteredTransactions.length} of {transactions.length} transactions
             </p>
           </div>
-          <button className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button onClick={handleShow} className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
             <FaPlus className="w-4 h-4 mr-2" />
             Add Transaction
           </button>
@@ -202,8 +228,8 @@ const TransactionHistory = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="all">All Categories</option>
-                  {availableCategories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
+                  {availableCategories.map((cat, index) => (
+                    <option key={index} value={cat}>{cat}</option>
                   ))}
                 </select>
               </div>
@@ -269,13 +295,13 @@ const TransactionHistory = () => {
             <FaCalendarAlt className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No transactions found</h3>
             <p className="text-gray-500 mb-4">
-              {transactions.length === 0 
-                ? "You haven't added any transactions yet." 
+              {transactions.length === 0
+                ? "You haven't added any transactions yet."
                 : "No transactions match your current filters."
               }
             </p>
             {transactions.length === 0 && (
-              <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              <button onClick={handleShow} className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                 <FaPlus className="w-4 h-4 mr-2" />
                 Add Your First Transaction
               </button>
@@ -285,13 +311,13 @@ const TransactionHistory = () => {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             {/* Mobile View */}
             <div className="sm:hidden divide-y divide-gray-200">
-              {filteredTransactions.map(transaction => (
-                <div key={transaction.id} className="p-4">
+              {filteredTransactions?.map((transaction, inde) => (
+                <div key={inde} className="p-4">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center">
                       <div className={`p-2 rounded-lg mr-3 ${transaction.type === 'income' ? 'bg-green-100' : 'bg-red-100'}`}>
-                        {transaction.type === 'income' ? 
-                          <IoIosTrendingUp className="w-4 h-4 text-green-600" /> : 
+                        {transaction.type === 'income' ?
+                          <IoIosTrendingUp className="w-4 h-4 text-green-600" /> :
                           <IoIosTrendingDown className="w-4 h-4 text-red-600" />
                         }
                       </div>
@@ -305,10 +331,10 @@ const TransactionHistory = () => {
                         {transaction.type === 'income' ? '+' : '-'}${transaction.amount.toFixed(2)}
                       </span>
                       <div className="flex space-x-1">
-                        <button className="p-1.5 text-gray-400 hover:text-blue-600 rounded">
+                        <button onClick={() => handleEdit(transaction.id)} className="p-1.5 text-gray-400 hover:text-blue-600 rounded">
                           <FaEdit className="w-4 h-4" />
                         </button>
-                        <button 
+                        <button
                           onClick={() => deleteTransaction(transaction.id)}
                           className="p-1.5 text-gray-400 hover:text-red-600 rounded"
                         >
@@ -350,13 +376,13 @@ const TransactionHistory = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredTransactions.map(transaction => (
-                    <tr key={transaction.id} className="hover:bg-gray-50">
+                  {filteredTransactions?.map((transaction, ind) => (
+                    <tr key={ind} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className={`p-2 rounded-lg mr-3 ${transaction.type === 'income' ? 'bg-green-100' : 'bg-red-100'}`}>
-                            {transaction.type === 'income' ? 
-                              <IoIosTrendingUp className="w-4 h-4 text-green-600" /> : 
+                            {transaction.type === 'income' ?
+                              <IoIosTrendingUp className="w-4 h-4 text-green-600" /> :
                               <IoIosTrendingDown className="w-4 h-4 text-red-600" />
                             }
                           </div>
@@ -380,11 +406,11 @@ const TransactionHistory = () => {
                         {transaction.description || '-'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex justify-end space-x-2">
-                          <button className="text-blue-600 hover:text-blue-700">
+                        <div className="flex justify-end gap-2">
+                          <button onClick={() => handleEdit(transaction?.id)} className="text-blue-600 hover:text-blue-700">
                             <FaEdit className="w-4 h-4" />
                           </button>
-                          <button 
+                          <button
                             onClick={() => deleteTransaction(transaction.id)}
                             className="text-red-600 hover:text-red-700"
                           >
@@ -400,6 +426,8 @@ const TransactionHistory = () => {
           </div>
         )}
       </div>
+      <QuickAddTransaction onAdd={addTransaction} handleClose={handleShow} show={show} id={id}  update={editTransaction}/>
+
     </div>
   );
 };

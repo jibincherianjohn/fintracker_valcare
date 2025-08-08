@@ -1,8 +1,9 @@
 import React from 'react';
 import { IoIosTrendingDown, IoIosTrendingUp } from 'react-icons/io';
 import { FaArrowRight, FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
-const RecentTransactions = ({ transactions, onRefresh }) => {
+const RecentTransactions = ({ transactions, onRefresh,handleEdit }) => {
   const  user =  localStorage.getItem("userdata") ? JSON.parse(localStorage.getItem("userdata")) : {}
 
   const deleteTransaction = (transactionId) => {
@@ -33,19 +34,21 @@ const RecentTransactions = ({ transactions, onRefresh }) => {
     <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-gray-900">Recent Transactions</h3>
-        <button 
-          onClick={onRefresh}
-          className="flex items-center text-sm text-blue-600 hover:text-blue-700 font-medium"
-        >
-          View All
-          <FaArrowRight  className="w-4 h-4 ml-1" />
-
-        </button>
+       <Link to={'/transactions'}>
+          <button 
+            onClick={onRefresh}
+            className="flex items-center text-sm text-blue-600 hover:text-blue-700 font-medium"
+          >
+            View All
+            <FaArrowRight  className="w-4 h-4 ml-1" />
+  
+          </button>
+       </Link>
       </div>
       
       <div className="space-y-3">
-        {transactions.map(transaction => (
-          <div key={transaction.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+        {transactions?.map((transaction,ind) => (
+          <div key={ind} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
             <div className="flex items-center">
               <div className={`p-2 rounded-lg mr-3 ${transaction.type === 'income' ? 'bg-green-100' : 'bg-red-100'}`}>
                 {transaction.type === 'income' ? 
@@ -72,7 +75,7 @@ const RecentTransactions = ({ transactions, onRefresh }) => {
                 {transaction.type === 'income' ? '+' : '-'}${transaction.amount.toFixed(2)}
               </span>
               <div className="flex space-x-1">
-                <button className="p-1 text-gray-400 hover:text-blue-600 rounded">
+                <button onClick={()=>handleEdit(transaction?.id)} className="p-1 text-gray-400 hover:text-blue-600 rounded">
                   <FaEdit className="w-4 h-4" />
                 </button>
                 <button 

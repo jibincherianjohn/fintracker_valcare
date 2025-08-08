@@ -82,12 +82,10 @@ export default function RegisterInterface() {
                 {/* Left Side - Login Form */}
                 <div className="p-12 flex flex-col justify-center">
                     <div className="mb-8">
-                        <div className="flex items-center gap-2 mb-8">
-                            <span className="text-lg font-semibold text-gray-800">FinTrac</span>
+                        <div className="flex items-center justify-center gap-2 mb-8">
+                            <h2 className="text-xl text-center font-bold text-gray-800">FinTrac</h2>
                         </div>
 
-                        <h1 className="text-4xl font-bold text-gray-900 mb-2">Hello,</h1>
-                        <h2 className="text-4xl font-bold text-gray-900 mb-4">Welcome Back</h2>
                     </div>
 
                     <div>
@@ -160,18 +158,13 @@ export default function RegisterInterface() {
                                             : 'bg-purple-600 text-white hover:bg-purple-700'
                                     }`}
                                 >
-                                    {isSubmitting ? 'Signing In...' : 'Sign In'}
+                                    {isSubmitting ? 'Signing Up...' : 'Sign Up'}
                                 </button>
                             </div>
                       </form>
                     </div>
 
-                    <div className="mt-8 text-center">
-                        <span className="text-gray-600">Don't have an account? </span>
-                        <button className="text-purple-600 hover:text-purple-700 font-semibold transition-colors">
-                            Sign Up
-                        </button>
-                    </div>
+              
                 </div>
 
                 {/* Right Side - Illustration */}
